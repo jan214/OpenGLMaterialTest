@@ -1,5 +1,7 @@
 # OpenGLMaterialTest
 
+I use OpenGL, GLFW3 and glad
+
 To build an executable on Windows with gcc, use the makefile.
 1. Open Command line
 2. direct to the direction with the makefile on your pc > cd [dir]
