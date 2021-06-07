@@ -1,6 +1,10 @@
 #include "cube.h"
 
 Cube::Cube(GLuint pprogram) : Object(){
+    /*
+    this cube class is for a predefined cube
+    cube derives from object so i don't need to rewrite/copy draw and setup function
+    */
     program = pprogram;
 
     aindices = {1,3,0,7,5,4,
