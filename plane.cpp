@@ -1,6 +1,10 @@
 #include "plane.h"
 
 Plane::Plane(GLuint pprogram) : Object(){
+    /*
+    A predefined Plane
+    derives from Object for setup and draw function
+    */
     program = pprogram;
 
     aindices = {
