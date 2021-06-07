@@ -11,25 +11,16 @@
 
 #define PI 3.141
 
-static void error_callback(int error, const char* description){
-    fprintf(stderr, "Error: %s\n", description);
-}
-
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
-    if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-}
-
-int windowsize[2] = {640,320};
-GLint windowxsize, windowysize;
+int windowsize[2] = {640,320}; //size of the window
+GLint windowxsize, windowysize; //uniform for shader
 
 int main(void){
     GLFWwindow* window;
-
-    bool bCursor = true;
+    
+    bool bCursor = true; //show hide cursor by pressing alt
     bool bButtonDown = false;
-    double mouse[2] = {0.0f,0.0f};
-    double move[2] = {0.0f,0.0f};
+    double mouse[2] = {0.0f,0.0f}; //for mouse movement
+    double move[2] = {0.0f,0.0f}; //also for mouse movement
 
     /* Initialize the library */
     if (!glfwInit())
@@ -47,6 +38,7 @@ int main(void){
     gladLoadGL();
     glfwSwapInterval(0);
 
+    //vertex shader source
     const char* vertexShadertext = "#version 110\n"
                                     "attribute vec3 position;\n"
                                     "attribute vec3 normal;\n"
@@ -64,14 +56,14 @@ int main(void){
                                     "screenpos = vec3(aposition.x/aposition.z,aposition.y/aposition.z,aposition.z);\n"
                                     "gl_Position = vec4(screenpos.x,screenpos.y,screenpos.z*0.01,1.0);\n"
                                     "}\n";
-
+    //frag shader for ambient only material
     const char* fragShadertext = "#version 110\n"
                                     "varying vec3 aposition;\n"
                                     "varying vec3 anormal;\n"
                                     "void main(){\n"
                                     "gl_FragColor = vec4(1.0,1.0,1.0,1.0);\n"
                                     "}\n";
-
+    //fragment shader for a red metallic material
     const char* redfragShadertext = "#version 110\n"
                                     "varying vec4 anormal;\n"
                                     "varying vec4 aposition;\n"
@@ -87,7 +79,7 @@ int main(void){
                                     "specular = pow(dot(reflec,vec3(0.0,0.0,0.0)-lightfrag),128.0);\n"
                                     "gl_FragColor = (specular+diffuse) * vec4(1.0,0.0,0.0,1.0)*0.9;\n"
                                     "}\n";
-
+    //fragment shader for green diffuse material
     const char* greenfragShadertext = "#version 110\n"
                                       "varying vec4 anormal;\n"
                                       "varying vec4 aposition;\n"
@@ -100,9 +92,9 @@ int main(void){
                                       "diffuse = dot(lightfrag,anormal.xyz);\n"
                                       "gl_FragColor = (diffuse) * vec4(0.0,1.0,0.0,1.0)*0.9;\n"
                                       "}\n";
-
+    
     GLuint vertexShader, fragShader, redfragShader, greenfragShader, vertexBuffer, indicesBuffer, program, redprogram,greenprogram;
-
+    //compiling and linking all material shaders
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader,1,&vertexShadertext,NULL);
     glCompileShader(vertexShader);
@@ -135,7 +127,7 @@ int main(void){
     glAttachShader(greenprogram,vertexShader);
     glAttachShader(greenprogram,greenfragShader);
     glLinkProgram(greenprogram);
-
+    //creating test objects
     Cube* obj1 = new Cube(program);
     obj1->setup();
     obj1->translate(std::vector<float>{0.0f,0.0,5.0f});
@@ -152,13 +144,11 @@ int main(void){
     Plane* planeobj = new Plane(redprogram);
     planeobj->setup();
     planeobj->translate(std::vector<float>{0.0f,0.0f,3.0f});
-
+    //for translation(WASD) and rotation(locked mouse)
     float translate[3] = {0.0f,0.0f,0.0f};
     float rotation[3] = {0.0f,0.0f,0.0f};
 
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_FRONT);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window)){
@@ -219,7 +209,7 @@ int main(void){
             glfwSetCursorPos(window,0.0f,0.0f);
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
-
+        //draw testobjects
         obj1->draw(translate,rotation);
         obj2->draw(translate,rotation);
         obj3->draw(translate,rotation);
