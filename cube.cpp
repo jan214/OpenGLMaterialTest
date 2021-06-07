@@ -3,7 +3,7 @@
 Cube::Cube(GLuint pprogram) : Object(){
     /*
     this cube class is for a predefined cube
-    cube derives from object so i don't need to rewrite/copy draw and setup function
+    cube derives from object for setup and draw functions
     */
     program = pprogram;
 
