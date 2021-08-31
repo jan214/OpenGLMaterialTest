@@ -26,7 +26,7 @@ private:
     GLuint indicesBuffer, vertexBuffer, normalBuffer;
     GLint locPosition, locNormals, locTranslation;
     GLint tMatrix,yrotationmatrix;
-    std::vector<float> translation;
+    float translation[3];
 
 public:
     GLuint program;

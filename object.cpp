@@ -3,11 +3,12 @@
 #include <math.h>
 
 Object::Object(std::vector<uint16_t> pindices,std::vector<float> pvertices,std::vector<uint16_t> pnormind, std::vector<float> pnormals, GLuint &pprogram){
-    //for creating a test object with custom vertices,indices,normals and material
     indices = pindices;
     vertices = pvertices;
     program = pprogram;
-    translation = {0.0f,0.0f,0.0f};
+    translation[0] = 0.0f;
+    translation[1] = 0.0f;
+    translation[2] = 0.0f;
 
     for(int i = 0; i < indices.size(); i++){
         for(int j = 0; j < 3; j++){
@@ -29,7 +30,9 @@ Object::~Object(){
 }
 
 void Object::setup(){
-    //setting up all buffer for vertices and normals
+    //glGenBuffers(1,&indicesBuffer);
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,indicesBuffer);
+    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t)* indicessize, &indices[0],GL_STATIC_DRAW);
     glUseProgram(program);
 
     glGenBuffers(1,&vertexBuffer);
@@ -40,10 +43,10 @@ void Object::setup(){
     glGenBuffers(1,&normalBuffer);
     glBindBuffer(GL_ARRAY_BUFFER,normalBuffer);
     glBufferData(GL_ARRAY_BUFFER,sizeof(float)*normals.size(),&normals[0],GL_STATIC_DRAW);
-    //setting up attribute variables
+
     locPosition = glGetAttribLocation(program,"position");
     locNormals = glGetAttribLocation(program,"normal");
-    //setting up uniforms
+
     windowxsize = glGetUniformLocation(program,"screenx");
     windowysize = glGetUniformLocation(program,"screeny");
     locTranslation = glGetUniformLocation(program, "translation");
@@ -52,7 +55,7 @@ void Object::setup(){
     glBindBuffer(GL_ARRAY_BUFFER,0);
 }
 
-void Object::draw(float ptranslate[3],float protation[3]){
+void Object::draw(float ptranslation[3],float protation[3]){
     glUseProgram(program);
     glBindBuffer(GL_ARRAY_BUFFER,vertexBuffer);
 
@@ -66,9 +69,9 @@ void Object::draw(float ptranslate[3],float protation[3]){
 
     glUniform1f(windowxsize, windowsize[0]);
     glUniform1f(windowysize, windowsize[1]);
-    glUniform3f(locTranslation, translation[0], translation[1], translation[2]);
-
-    //translation matrix
+    glUniform3f(locTranslation, translation[0]+ptranslation[0], translation[1]+ptranslation[1], translation[2]+ptranslation[2]);
+    //glUniform3f(yrotationmatrix, rmatrix[0][0], rmatrix[1][0], rmatrix[2][0]);
+    /*
     tmatrix[0][0] = 1.0f;
     tmatrix[0][1] = 0.0f;
     tmatrix[0][2] = 0.0f;
@@ -84,10 +87,10 @@ void Object::draw(float ptranslate[3],float protation[3]){
     tmatrix[3][0] = 0.0f;
     tmatrix[3][1] = 0.0f;
     tmatrix[3][2] = 0.0f;
-    tmatrix[3][3] = 1.0f;
+    tmatrix[3][3] = 1.0f;*/
 
     glUniformMatrix4fv(tMatrix, 1, GL_TRUE, &tmatrix[0][0]);
-    //rotation around the y axis matrix
+
     rmatrix[0][0] = cos(-protation[1]);
     rmatrix[0][1] = 0.0f;
     rmatrix[0][2] = sin(-protation[1]);
@@ -106,10 +109,12 @@ void Object::draw(float ptranslate[3],float protation[3]){
     rmatrix[3][3] = 1.0f;
 
     glUniformMatrix4fv(yrotationmatrix, 1, GL_TRUE, &rmatrix[0][0]);
-    //draw all vertices
+
     glDrawArrays(GL_TRIANGLES,0,array.size());
 }
 
 void Object::translate(std::vector<float> ptranslation){
-    translation = ptranslation;
+    translation[0] = ptranslation[0];
+    translation[1] = ptranslation[1];
+    translation[2] = ptranslation[2];
 }
